@@ -1,0 +1,238 @@
+<div class="lg:flex  bg-gray-100 h-screen overflow-y-auto">
+ 
+<div class="w-full lg:w-1/4 bg-white p-4 shadow-md">
+  <div class="flex justify-between items-center">
+       <span class="text-lg font-bold ">Field Groups</span>
+      <div (click)="isModalOpen = true" class="flex items-center">
+        <mat-icon class="circle-icon">add</mat-icon>
+        <span class="ml-2">Create New</span>
+      </div>
+   
+    </div>
+
+    <div class="mt-4">
+<button class="w-full" style="border: 1px solid #dcdfe3;
+    padding: 6px 20px; text-align: left;">Default field group</button>
+    </div>
+
+  <ul class="mt-6" cdkDropList (cdkDropListDropped)="dropGroup($event)" [cdkDropListData]="fieldGroups">
+      <li *ngFor="let group of fieldGroups" 
+          cdkDrag 
+          class="p-2 cursor-pointer flex items-center cursor-pointer"
+          [class.bg-blue-100]="selectedGroup?.id === group.id"
+          style="border: 1px solid #dcdfe3; padding: 6px 20px; text-align: left; margin-bottom: 10px;" (click)="selectGroup(group)">
+          
+         
+          <span cdkDragHandle> 
+            <mat-icon style="color: #c2bfbf;">drag_indicator</mat-icon>
+          </span>
+          
+    
+          <span class="ml-2" >{{ group.name }}</span>
+      </li>
+    </ul>
+    
+
+
+    <div *ngIf="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+      <div class="bg-white p-6 rounded shadow-lg w-96">
+        <h2 class="text-lg font-bold mb-4">Add New Field Group</h2>
+        <input type="text" [(ngModel)]="newGroupName" placeholder="Group Name" class="w-full p-2 border rounded mb-2" />
+        <input type="text" [(ngModel)]="newGroupDescription" placeholder="Description"
+          class="w-full p-2 border rounded mb-2" />
+        <div class="flex justify-end gap-2 mt-4">
+          <button class="bg-gray-500 text-white px-4 py-2 rounded" (click)="isModalOpen = false">
+            Cancel
+          </button>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded" (click)="addFieldGroup()">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+  <div class=" w-full lg:w-2/4 p-4 bg-gray-50 shadow-md ">
+    <div *ngIf="selectedGroup">
+  
+       <div class="border p-6 bg-white shadow-lg mt-2 rounded-lg">
+
+       <div class="flex justify-between items-center">
+        <h3 class=" text-black-600 text-md font-semibold">{{ selectedGroup.name }}</h3>
+        <div>
+          <button style="color: #c2bfbf;" class="mr-2" (click)="editFieldGroup(selectedGroup)" > <mat-icon>edit</mat-icon></button>
+          <button  style="color: #c2bfbf;" class="" (click)="deleteFieldGroup(selectedGroup.id)" > <mat-icon>delete</mat-icon></button>
+        </div>
+       </div>
+
+      
+        <h5 class="text-gray-600">{{ selectedGroup.description }}</h5>
+      </div>
+
+     
+   <div class=" rounded-lg border p-2 bg-white shadow-lg mt-2 min-h-[300px]" cdkDropList id="selectedList"
+        [cdkDropListData]="selectedGroup.elements" [cdkDropListConnectedTo]="['availableList']"
+        (cdkDropListDropped)="drop($event)">
+
+        <div class=" p-4 mt-4 flex flex-col gap-4">
+          <div class="flex" *ngFor="let element of selectedGroup.elements; let i = index" cdkDrag>
+         
+            <div class="p-4 border-r border-gray-400" >
+                <mat-icon style="color: #c2bfbf;">drag_indicator</mat-icon>
+            </div>
+        
+        
+            <div class="w-full pl-4 ">
+        
+              <div >
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-800">{{element?.label}}</span>
+                  <div>
+                    <button style="color: #c2bfbf;" class="mr-2" (click)="editElement(element)"  > <mat-icon>edit</mat-icon></button>
+                    <button  style="color: #c2bfbf;" class=""  (click)="removeElement(i)"  > <mat-icon>delete</mat-icon></button>
+                  </div>
+                </div>
+                <div class="mt-2 text-gray-400">
+                  Enter The description
+                </div>
+                <div class="mt-2">
+                 
+                  <input 
+                  *ngIf="element.type !== 'textarea' && element.type !== 'dropdown' && element.type !== 'file'"
+                  class="w-full p-2 border border-gray-300"
+                  [ngClass]="getInputClass(element.type)"
+                  [ngStyle]="getInputStyle(element.type)"
+                  placeholder="Type here..."
+                  [type]="element.type"
+                  value="{{element.placeholder}}">
+                
+              
+                <textarea 
+                  *ngIf="element.type === 'textarea'"
+                  class="w-full p-2 border border-gray-300"
+                  [ngClass]="getInputClass(element.type)"
+                  [ngStyle]="getInputStyle(element.type)"
+                  placeholder="Type here...">
+                </textarea>
+                
+             
+                <select *ngIf="element.type === 'dropdown'" class="w-full p-2 border border-gray-300">
+                  <option>Select an option</option>
+                </select>
+                
+            
+                <input 
+                  *ngIf="element.type === 'file'" 
+                  type="file" 
+                  class="w-full p-2 border border-gray-300">
+                
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+   </div>
+
+    </div>
+  </div>
+
+  <div class="w-full lg:w-1/4   bg-white shadow-md h-screen overflow-y-auto" cdkDropList id="availableList" [cdkDropListData]="availableElements"
+  [cdkDropListConnectedTo]="['selectedList']" (cdkDropListDropped)="drop($event)">
+
+  <h2 class="text-lg font-bold pt-4 px-4">Elements</h2>
+
+  <div class="px-4 mb-4">
+    <div class="flex items-center;" style="border: 1px solid #dcdfe3; padding: 6px 15px;background-color:#eceef0;">
+      <mat-icon class="text-[22px]">search</mat-icon>
+      <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search Anything" class="w-full ml-2 outline-none" style="text-align: left;background-color:#eceef0;">
+    </div>
+
+  </div>
+
+  
+  <div *ngFor="let category of availableElements2" style="border-bottom: 1px solid #dcdfe3;" class="mb-3" >
+  
+    <span  style="color:#a7a1a1;" class="text-md font-semibold mt-4 mb-2 p-4">
+      {{ category.label }}
+    </span>
+
+   
+    <div *ngFor="let element of category.elements" cdkDrag class="mt-4 mb-2 px-5 cursor-move">
+      <div class="flex items-center mb-4">
+        <div class="rounded-sm p-[8px]" style="height: 36px;
+        background: #f3eded;
+        width: 36px;
+      ">
+          <mat-icon class="text-gray-500 text-[20px]">{{ element.icon }}</mat-icon>
+        </div>
+
+        <div class="pl-[14px]">
+          <div>
+            <span style="font-weight: 600;font-size: 16px;">{{ element.label }}</span>
+          </div>
+          <div style="color: #b3b2c1;font-size: 13px;">Single Text Area</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div *ngIf="isElementModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded shadow-lg w-96">
+      <h2 class="text-lg font-bold mb-4">Edit Field</h2>
+      <input type="text" [(ngModel)]="selectedElement.label" placeholder="Label"
+        class="w-full p-2 border rounded mb-2" />
+
+<div class="mt-2">
+ 
+  <input 
+  *ngIf="selectedElement.type !== 'textarea' && selectedElement.type !== 'dropdown' && selectedElement.type !== 'file'"
+  class="w-full p-2 border border-gray-300"
+  [ngClass]="getInputClass(selectedElement.type)"
+  [ngStyle]="getInputStyle(selectedElement.type)"
+  [(ngModel)]="selectedElement.placeholder"
+  placeholder="Type here..."
+  [type]="selectedElement.type"
+  value="{{selectedElement.placeholder}}">
+
+
+<textarea 
+  *ngIf="selectedElement.type === 'textarea'"
+  class="w-full p-2 border border-gray-300"
+  [ngClass]="getInputClass(selectedElement.type)"
+  [ngStyle]="getInputStyle(selectedElement.type)"
+  [(ngModel)]="selectedElement.placeholder"
+  placeholder="Type here...">
+</textarea>
+
+
+<select *ngIf="selectedElement.type === 'dropdown'" class="w-full p-2 border border-gray-300">
+  <option>Select an option</option>
+</select>
+
+
+<input 
+  *ngIf="selectedElement.type === 'file'" 
+  type="file" 
+  class="w-full p-2 border border-gray-300">
+
+</div>
+
+      <div class="mt-2">
+        <input type="checkbox" [(ngModel)]="selectedElement.required" /> Required
+      </div>
+  <div class="flex justify-end gap-2 mt-4">
+        <button class="bg-gray-500 text-white px-4 py-2 rounded" (click)="isElementModalOpen = false">
+          Cancel
+        </button>
+        <button class="bg-green-500 text-white px-4 py-2 rounded" (click)="saveElement()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+  
+</div>
