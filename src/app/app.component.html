@@ -1,9 +1,9 @@
-<div class="lg:flex  bg-gray-100 h-screen overflow-y-auto">
+<div class="lg:flex  bg-gray-100 lg:h-screen overflow-y-auto">
  
 <div class="w-full lg:w-1/4 bg-white p-4 shadow-md">
   <div class="flex justify-between items-center">
        <span class="text-lg font-bold ">Field Groups</span>
-      <div (click)="isModalOpen = true" class="flex items-center">
+      <div (click)="isModalOpen = true" class="flex items-center cursor-pointer">
         <mat-icon class="circle-icon">add</mat-icon>
         <span class="ml-2">Create New</span>
       </div>
@@ -18,7 +18,7 @@
   <ul class="mt-6" cdkDropList (cdkDropListDropped)="dropGroup($event)" [cdkDropListData]="fieldGroups">
       <li *ngFor="let group of fieldGroups" 
           cdkDrag 
-          class="p-2 cursor-pointer flex items-center cursor-pointer"
+          class="p-2 cursor-pointer flex items-center"
           [class.bg-blue-100]="selectedGroup?.id === group.id"
           style="border: 1px solid #dcdfe3; padding: 6px 20px; text-align: left; margin-bottom: 10px;" (click)="selectGroup(group)">
           
@@ -52,94 +52,150 @@
     </div>
 
 
+<div *ngIf="isEditModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+  <div class="bg-white p-6 rounded shadow-lg w-96">
+    <h2 class="text-lg font-bold mb-4">Edit Field Group</h2>
+    <input type="text" [(ngModel)]="editGroupName" placeholder="Group Name" class="w-full p-2 border rounded mb-2" />
+    <input type="text" [(ngModel)]="editGroupDescription" placeholder="Description"
+      class="w-full p-2 border rounded mb-2" />
+    <div class="flex justify-end gap-2 mt-4">
+      <button class="bg-gray-500 text-white px-4 py-2 rounded" (click)="isEditModalOpen = false">
+        Cancel
+      </button>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded" (click)="updateFieldGroup()">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
   </div>
 
 
-  <div class=" w-full lg:w-2/4 p-4 bg-gray-50 shadow-md ">
-    <div *ngIf="selectedGroup">
-  
-       <div class="border p-6 bg-white shadow-lg mt-2 rounded-lg">
+  <div class=" w-full lg:w-2/4 p-4 bg-gray-50 shadow-md lg:h-screen overflow-y-auto">
+    <div class="lg:p-4" *ngIf="selectedGroup">
 
-       <div class="flex justify-between items-center">
-        <h3 class=" text-black-600 text-md font-semibold">{{ selectedGroup.name }}</h3>
-        <div>
-          <button style="color: #c2bfbf;" class="mr-2" (click)="editFieldGroup(selectedGroup)" > <mat-icon>edit</mat-icon></button>
-          <button  style="color: #c2bfbf;" class="" (click)="deleteFieldGroup(selectedGroup.id)" > <mat-icon>delete</mat-icon></button>
-        </div>
-       </div>
+      <div class="px-4">
+        <div class="border px-6 py-2 bg-white shadow-lg mt-2 rounded-lg">
 
-      
-        <h5 class="text-gray-600">{{ selectedGroup.description }}</h5>
+          <div class="flex justify-between items-center">
+           <h3 class=" text-black-600 text-md font-semibold">{{ selectedGroup.name }}</h3>
+           <div>
+          
+             <button style="color: #c2bfbf;" class="mr-2" (click)="editFieldGroup(selectedGroup)" > <mat-icon>edit</mat-icon></button>
+             <button style="color: #c2bfbf;" class="mr-2" (click)="copyFieldGroup(selectedGroup)">
+              <mat-icon>content_copy</mat-icon>  <!-- Copy Icon -->
+            </button>
+             <button  style="color: #c2bfbf;" class="" (click)="deleteFieldGroup(selectedGroup.id)" > <mat-icon>delete</mat-icon></button>
+           </div>
+          </div>
+   
+         
+           <h5 class="text-gray-600">{{ selectedGroup.description }}</h5>
+         </div>
       </div>
+  
+    
 
      
-   <div class=" rounded-lg border p-2 bg-white shadow-lg mt-2 min-h-[300px]" cdkDropList id="selectedList"
+   <div class="min-h-[144px]" cdkDropList id="selectedList"
         [cdkDropListData]="selectedGroup.elements" [cdkDropListConnectedTo]="['availableList']"
         (cdkDropListDropped)="drop($event)">
-
-        <div class=" p-4 mt-4 flex flex-col gap-4">
-          <div class="flex" *ngFor="let element of selectedGroup.elements; let i = index" cdkDrag>
-         
-            <div class="p-4 border-r border-gray-400" >
-                <mat-icon style="color: #c2bfbf;">drag_indicator</mat-icon>
-            </div>
-        
-        
-            <div class="w-full pl-4 ">
-        
-              <div >
-                <div class="flex justify-between items-center">
-                  <span class="text-gray-800">{{element?.label}}</span>
-                  <div>
-                    <button style="color: #c2bfbf;" class="mr-2" (click)="editElement(element)"  > <mat-icon>edit</mat-icon></button>
-                    <button  style="color: #c2bfbf;" class=""  (click)="removeElement(i)"  > <mat-icon>delete</mat-icon></button>
-                  </div>
-                </div>
-                <div class="mt-2 text-gray-400">
-                  Enter The description
-                </div>
-                <div class="mt-2">
-                 
-                  <input 
-                  *ngIf="element.type !== 'textarea' && element.type !== 'dropdown' && element.type !== 'file'"
-                  class="w-full p-2 border border-gray-300"
-                  [ngClass]="getInputClass(element.type)"
-                  [ngStyle]="getInputStyle(element.type)"
-                  placeholder="Type here..."
-                  [type]="element.type"
-                  value="{{element.placeholder}}">
-                
-              
-                <textarea 
-                  *ngIf="element.type === 'textarea'"
-                  class="w-full p-2 border border-gray-300"
-                  [ngClass]="getInputClass(element.type)"
-                  [ngStyle]="getInputStyle(element.type)"
-                  placeholder="Type here...">
-                </textarea>
-                
+    <div class="">
+            <div class=" p-4  flex flex-col gap-4">
+              <div class="flex rounded-lg border  bg-white shadow-lg mt-2 min-h-[144px]" *ngFor="let element of selectedGroup.elements; let i = index" cdkDrag>
              
-                <select *ngIf="element.type === 'dropdown'" class="w-full p-2 border border-gray-300">
-                  <option>Select an option</option>
-                </select>
-                
+                <div class="p-[46px] px-[10px] border-r border-gray-400" >
+                    <mat-icon style="color: #c2bfbf;">drag_indicator</mat-icon>
+                </div>
             
-                <input 
-                  *ngIf="element.type === 'file'" 
-                  type="file" 
-                  class="w-full p-2 border border-gray-300">
+            
+                <div class="w-full pl-4 p-4">
+            
+                  <div >
+                    <div class="flex justify-between items-center">
+                      <span class="text-gray-800">{{element?.label}}</span>
+                      <div>
+                      <button style="color: #c2bfbf;" class="mr-2" (click)="editElement(element)"  > <mat-icon>edit</mat-icon></button>
+                      <button style="color: #c2bfbf;" class="mr-2" (click)="copyElement(element)">
+                        <mat-icon>content_copy</mat-icon>  <!-- Copy Icon -->
+                      </button>
+                        <button  style="color: #c2bfbf;" class=""  (click)="removeElement(i)"  > <mat-icon>delete</mat-icon></button>
+                      </div>
+                    </div>
+                    <div class="mt-2 text-gray-400">
+                      Enter The description
+                    </div>
+                    <div class="mt-2">
+                     
+                      <input 
+                      *ngIf="element.type !== 'textarea' && element.type !== 'dropdown' && element.type !== 'file'&& element.type !== 'radio' &&element.type !== 'checkbox' " 
+                      class="w-full p-2 border border-gray-300"
+                      [ngClass]="getInputClass(element.type)"
+                      [ngStyle]="getInputStyle(element.type)"
+                      placeholder="Type here..."
+                      [type]="element.type"
+                      value="{{element.placeholder}}">
+                    
+                  
+                    <textarea 
+                      *ngIf="element.type === 'textarea'"
+                      class="w-full p-2 border border-gray-300"
+                      [ngClass]="getInputClass(element.type)"
+                      [ngStyle]="getInputStyle(element.type)"
+                      placeholder="Type here...">
+                    </textarea>
+                    
+                 
+                    <select *ngIf="element.type === 'dropdown'" class="w-full p-2 border border-gray-300">
+                      <option>Select an option</option>
+                    </select>
+                    
                 
+                    <input 
+                      *ngIf="element.type === 'file'" 
+                      type="file" 
+                      class="w-full p-2 border border-gray-300">
+
+                         
+    <div *ngIf="element.type === 'radio'">
+ 
+      <div  *ngFor="let option of element.options">
+        <input type="radio" [value]="option.value" name="radioGroup-{{i}}" [(ngModel)]="element.selectedValue">
+        <label class="ml-2" >{{ option.label }}</label>
+      </div>
+    </div>
+
+  
+    <div *ngIf="element.type === 'checkbox'">
+  
+      <div  *ngFor="let option of element.options">
+        <input type="checkbox" [value]="option.value" [(ngModel)]="option.checked">
+        <label class="ml-2">{{ option.label }}</label>
+      </div>
+    </div>
+
+
+
+
+                    
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+       
+
+     
    </div>
 
     </div>
   </div>
 
-  <div class="w-full lg:w-1/4   bg-white shadow-md h-screen overflow-y-auto" cdkDropList id="availableList" [cdkDropListData]="availableElements"
+  <div class="w-full lg:w-1/4   bg-white shadow-md lg:h-screen overflow-y-auto" cdkDropList id="availableList" [cdkDropListData]="availableElements"
   [cdkDropListConnectedTo]="['selectedList']" (cdkDropListDropped)="drop($event)">
 
   <h2 class="text-lg font-bold pt-4 px-4">Elements</h2>

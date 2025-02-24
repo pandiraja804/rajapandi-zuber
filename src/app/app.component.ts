@@ -1,4 +1,4 @@
-import { Component,OnInit  } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -6,37 +6,39 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit  {
-  filteredElements:any
-  availableElements2:any;
+export class AppComponent implements OnInit {
+  filteredElements: any
+  availableElements2: any;
   ngOnInit(): void {
 
     this.availableElements2 = this.availableElements1
- 
+
   }
   fieldGroups = JSON.parse(localStorage.getItem('fieldGroups') || '[]');
 
 
-   availableElements = [
-  
+  availableElements = [
+
     { type: 'text', label: 'Single Line Text', icon: 'short_text' },
     { type: 'textarea', label: 'Multi-Line Text', icon: 'notes' },
-  
-    
+    { type: 'number', label: 'Number Input', icon: 'looks_one' },
+
     { type: 'date', label: 'Date Picker', icon: 'event' },
     { type: 'time', label: 'Time Picker', icon: 'schedule' },
-    { type: 'datetime', label: 'Date & Time Picker', icon: 'calendar_today' },
-  
+    { type: 'datetime-local', label: 'Date & Time Picker', icon: 'calendar_today' },
+
 
     { type: 'dropdown', label: 'Dropdown', icon: 'arrow_drop_down_circle' },
-    { type: 'radio', label: 'Single Selection', icon: 'radio_button_checked', options: [] },
-    { type: 'checkbox', label: 'Multi Selection', icon: 'check_box', options: [] },
-  
- 
+    { type: 'radio', label: 'Single Selection', icon: 'radio_button_checked', options: [  { label: 'Option 1', value: 'option1' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' }] },
+    { type: 'checkbox', label: 'Multi Selection', icon: 'check_box', options: [{ label: 'Check 1', value: 'check1' },
+      { label: 'Check 2', value: 'check2' },
+      { label: 'Check 3', value: 'check3' }] },
+
+
     { type: 'file', label: 'Upload Field', icon: 'upload_file' }
   ];
-
-
 
   availableElements1 = [
     {
@@ -45,7 +47,7 @@ export class AppComponent implements OnInit  {
       elements: [
         { type: 'text', label: 'Single Line Text', icon: 'short_text' },
         { type: 'textarea', label: 'Multi-Line Text', icon: 'notes' },
-        // { type: 'number', label: 'Number Input', icon: 'looks_one' },
+        { type: 'number', label: 'Number Input', icon: 'looks_one' },
       ]
     },
     {
@@ -54,7 +56,7 @@ export class AppComponent implements OnInit  {
       elements: [
         { type: 'date', label: 'Date Picker', icon: 'event' },
         { type: 'time', label: 'Time Picker', icon: 'schedule' },
-        { type: 'datetime', label: 'Date & Time Picker', icon: 'calendar_today' },
+        { type: 'datetime-local', label: 'Date & Time Picker', icon: 'calendar_today' },
       ]
     },
     {
@@ -62,8 +64,12 @@ export class AppComponent implements OnInit  {
       label: 'MULTI',
       elements: [
         { type: 'dropdown', label: 'Dropdown', icon: 'arrow_drop_down_circle' },
-        { type: 'radio', label: 'Single Selection', icon: 'radio_button_checked', options: [] },
-        { type: 'checkbox', label: 'Multi Selection', icon: 'check_box', options: [] },
+        { type: 'radio', label: 'Single Selection', icon: 'radio_button_checked', options: [ { label: 'Option 1', value: 'option1' },
+          { label: 'Option 2', value: 'option2' },
+          { label: 'Option 3', value: 'option3' }] },
+        { type: 'checkbox', label: 'Multi Selection', icon: 'check_box', options: [{ label: 'Check 1', value: 'check1' },
+          { label: 'Check 2', value: 'check2' },
+          { label: 'Check 3', value: 'check3' }] },
       ]
     },
     {
@@ -74,9 +80,6 @@ export class AppComponent implements OnInit  {
       ]
     }
   ];
-  
-  
-  
 
   selectedGroup: any = null;
   selectedElement: any = null;
@@ -85,13 +88,17 @@ export class AppComponent implements OnInit  {
   newGroupName = '';
   newGroupDescription = '';
   searchText: string = '';
+  isEditModalOpen = false;
+  editGroupName = '';
+  editGroupDescription = '';
+  editingGroup: any = null;
 
- 
+
   selectGroup(group: any) {
     this.selectedGroup = group;
   }
 
- 
+
   addFieldGroup() {
     if (this.newGroupName.trim()) {
       const newGroup = {
@@ -108,15 +115,21 @@ export class AppComponent implements OnInit  {
     }
   }
 
-
   editFieldGroup(group: any) {
-    const newName = prompt('Enter new group name:', group.name);
-    if (newName) {
-      group.name = newName;
-      this.saveToLocalStorage();
-    }
+    this.editingGroup = group;
+    this.editGroupName = group.name;
+    this.editGroupDescription = group.description;
+    this.isEditModalOpen = true;
   }
 
+  updateFieldGroup() {
+    if (this.editingGroup) {
+      this.editingGroup.name = this.editGroupName;
+      this.editingGroup.description = this.editGroupDescription;
+      this.saveToLocalStorage();
+      this.isEditModalOpen = false;
+    }
+  }
 
   deleteFieldGroup(id: number) {
     this.fieldGroups = this.fieldGroups.filter(
@@ -137,7 +150,6 @@ export class AppComponent implements OnInit  {
 
   editElement(element: any) {
     this.selectedElement = { ...element };
-    console.log(this.selectedElement,'this.selectedElementthis.selectedElement')
     this.isElementModalOpen = true;
   }
 
@@ -155,10 +167,8 @@ export class AppComponent implements OnInit  {
 
 
   drop(event: CdkDragDrop<any[]>) {
-
-    console.log(event,'................newwwwwwwww')
     if (event.previousContainer === event.container) {
-      
+
       moveItemInArray(
         event.container.data,
         event.previousIndex,
@@ -166,7 +176,7 @@ export class AppComponent implements OnInit  {
       );
       this.saveToLocalStorage();
     } else {
-    
+
       if (this.selectedGroup) {
         const newElement = {
           id: Date.now(),
@@ -174,10 +184,9 @@ export class AppComponent implements OnInit  {
           placeholder: '',
           required: false,
         };
-      
         this.selectedGroup.elements.splice(event.currentIndex, 0, newElement);
         this.saveToLocalStorage();
-        console.log(this.selectedGroup,'this.selectedGroup..........')
+
       }
     }
   }
@@ -188,42 +197,42 @@ export class AppComponent implements OnInit  {
 
 
   getInputClass(type: string): string {
- switch (type) {
+    switch (type) {
       case 'text':
-        return 'h-10'; 
+        return 'h-10';
       case 'textarea':
-        return 'h-24'; 
+        return 'h-20';
       case 'date':
       case 'time':
       case 'datetime':
-        return 'h-10 w-40'; 
+        return 'h-10 w-40';
       case 'number':
-        return 'h-10 w-32'; 
+        return 'h-10 ';
       case 'checkbox':
       case 'radio':
-        return 'w-6 h-6'; 
+        return 'w-6 h-6';
       case 'dropdown':
-        return 'h-10 w-full'; 
+        return 'h-10 w-full';
       case 'file':
-        return 'h-10'; 
+        return 'h-10';
       default:
-        return 'h-10'; 
+        return 'h-10';
     }
   }
-  
+
   getInputStyle(type: string): object {
     switch (type) {
       case 'textarea':
-        return { resize: 'vertical' }; 
+        return { resize: 'vertical' };
       case 'number':
-        return { width: '80px' }; 
+        return { width: 'full' };
       case 'checkbox':
       case 'radio':
-        return { width: '20px', height: '20px' }; 
+        return { width: '20px', height: '20px' };
       case 'file':
-        return { padding: '5px' }; 
+        return { padding: '5px' };
       default:
-        return {}; 
+        return {};
     }
   }
 
@@ -246,9 +255,28 @@ export class AppComponent implements OnInit  {
         elements: category.elements.filter(element => element.label.toLowerCase().includes(searchLower))
       }))
       .filter(category => category.elements.length); // Remove empty categories
-
-
   }
-  
-  
+
+  copyElement(element: any) {
+    if (this.selectedGroup) {
+      const copiedElement = { ...element, id: Date.now() }; // Duplicate with a new ID
+      this.selectedGroup.elements.push(copiedElement); // Add to the Middle Pane
+      this.saveToLocalStorage(); // Persist changes
+    }
+  }
+
+  copyFieldGroup(group: any) {
+    const copiedGroup = {
+      ...group, // Copy all properties
+      id: Date.now(), // Generate a new ID to avoid duplicates
+      name: group.name + ' (Copy)', // Append "(Copy)" to distinguish
+      elements: group.elements.map((element: any) => ({ ...element, id: Date.now() })) // Copy each element with a new ID
+    };
+
+    this.fieldGroups.push(copiedGroup); // Add the copied group to the list
+    this.saveToLocalStorage(); // Persist changes
+  }
+
+
+
 }
