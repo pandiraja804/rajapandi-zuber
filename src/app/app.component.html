@@ -11,20 +11,19 @@
     </div>
 
     <div class="mt-4">
-<button class="w-full" style="border: 1px solid #dcdfe3;
-    padding: 6px 20px; text-align: left;">Default field group</button>
+<button class="w-full border border-[#dcdfe3] px-5 py-1.5 text-left" >Default field group</button>
     </div>
 
   <ul class="mt-6" cdkDropList (cdkDropListDropped)="dropGroup($event)" [cdkDropListData]="fieldGroups">
       <li *ngFor="let group of fieldGroups" 
           cdkDrag 
-          class="p-2 cursor-pointer flex items-center"
+          class="p-2 cursor-pointer flex items-center border border-[#dcdfe3] px-5 py-1.5 text-left mb-[10px]"
           [class.bg-blue-100]="selectedGroup?.id === group.id"
-          style="border: 1px solid #dcdfe3; padding: 6px 20px; text-align: left; margin-bottom: 10px;" (click)="selectGroup(group)">
+          (click)="selectGroup(group)">
           
          
           <span cdkDragHandle> 
-            <mat-icon style="color: #c2bfbf;">drag_indicator</mat-icon>
+            <mat-icon class="text-[#c2bfbf]" >drag_indicator</mat-icon>
           </span>
           
     
@@ -84,11 +83,11 @@
            <h3 class=" text-black-600 text-md font-semibold">{{ selectedGroup.name }}</h3>
            <div>
           
-             <button style="color: #c2bfbf;" class="mr-2" (click)="editFieldGroup(selectedGroup)" > <mat-icon>edit</mat-icon></button>
-             <button style="color: #c2bfbf;" class="mr-2" (click)="copyFieldGroup(selectedGroup)">
-              <mat-icon>content_copy</mat-icon>  <!-- Copy Icon -->
+             <button   class="mr-2 text-gray-400" (click)="editFieldGroup(selectedGroup)" > <mat-icon>edit</mat-icon></button>
+             <button  class="mr-2 text-gray-400" (click)="copyFieldGroup(selectedGroup)">
+              <mat-icon>content_copy</mat-icon>  
             </button>
-             <button  style="color: #c2bfbf;" class="" (click)="deleteFieldGroup(selectedGroup.id)" > <mat-icon>delete</mat-icon></button>
+             <button   class="text-gray-400" (click)="deleteFieldGroup(selectedGroup.id)" > <mat-icon>delete</mat-icon></button>
            </div>
           </div>
    
@@ -107,8 +106,8 @@
             <div class=" p-4  flex flex-col gap-4">
               <div class="flex rounded-lg border  bg-white shadow-lg mt-2 min-h-[144px]" *ngFor="let element of selectedGroup.elements; let i = index" cdkDrag>
              
-                <div class="p-[46px] px-[10px] border-r border-gray-400" >
-                    <mat-icon style="color: #c2bfbf;">drag_indicator</mat-icon>
+                <div class="flex justify-center items-center border-r border-gray-400" >
+                    <mat-icon class="text-[#c2bfbf]" >drag_indicator</mat-icon>
                 </div>
             
             
@@ -118,11 +117,11 @@
                     <div class="flex justify-between items-center">
                       <span class="text-gray-800">{{element?.label}}</span>
                       <div>
-                      <button style="color: #c2bfbf;" class="mr-2" (click)="editElement(element)"  > <mat-icon>edit</mat-icon></button>
-                      <button style="color: #c2bfbf;" class="mr-2" (click)="copyElement(element)">
+                      <button  class="mr-2 text-gray-400" (click)="editElement(element)"  > <mat-icon>edit</mat-icon></button>
+                      <button  class="mr-2 text-gray-400" (click)="copyElement(element)">
                         <mat-icon>content_copy</mat-icon>  <!-- Copy Icon -->
                       </button>
-                        <button  style="color: #c2bfbf;" class=""  (click)="removeElement(i)"  > <mat-icon>delete</mat-icon></button>
+                        <button  class="text-gray-400"  (click)="removeElement(i)"  > <mat-icon>delete</mat-icon></button>
                       </div>
                     </div>
                     <div class="mt-2 text-gray-400">
@@ -201,35 +200,32 @@
   <h2 class="text-lg font-bold pt-4 px-4">Elements</h2>
 
   <div class="px-4 mb-4">
-    <div class="flex items-center;" style="border: 1px solid #dcdfe3; padding: 6px 15px;background-color:#eceef0;">
+    <div class="flex items-center;border border-[#dcdfe3] px-4 py-1.5 bg-[#eceef0]">
       <mat-icon class="text-[22px]">search</mat-icon>
-      <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search Anything" class="w-full ml-2 outline-none" style="text-align: left;background-color:#eceef0;">
+      <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search Anything" class="w-full ml-2 outline-none text-left bg-gray-200 px-4" >
     </div>
 
   </div>
 
   
-  <div *ngFor="let category of availableElements2" style="border-bottom: 1px solid #dcdfe3;" class="mb-3" >
+  <div *ngFor="let category of availableElements2"  class="mb-3 border-b border-gray-300" >
   
-    <span  style="color:#a7a1a1;" class="text-md font-semibold mt-4 mb-2 p-4">
+    <span  class="text-md font-semibold mt-4 mb-2 p-4 text-[#a7a1a1]">
       {{ category.label }}
     </span>
 
    
     <div *ngFor="let element of category.elements" cdkDrag class="mt-4 mb-2 px-5 cursor-move">
       <div class="flex items-center mb-4">
-        <div class="rounded-sm p-[8px]" style="height: 36px;
-        background: #f3eded;
-        width: 36px;
-      ">
+        <div class="rounded-sm p-[8px] h-9 w-9 bg-[#f3eded]" >
           <mat-icon class="text-gray-500 text-[20px]">{{ element.icon }}</mat-icon>
         </div>
 
         <div class="pl-[14px]">
           <div>
-            <span style="font-weight: 600;font-size: 16px;">{{ element.label }}</span>
+            <span class="font-semibold text-base" >{{ element.label }}</span>
           </div>
-          <div style="color: #b3b2c1;font-size: 13px;">Single Text Area</div>
+          <div class="text-[#b3b2c1] text-[13px]" >Single Text Area</div>
         </div>
       </div>
     </div>
