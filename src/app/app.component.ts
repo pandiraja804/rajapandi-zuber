@@ -240,11 +240,11 @@ export class AppComponent implements OnInit {
     moveItemInArray(this.fieldGroups, event.previousIndex, event.currentIndex);
   }
 
-  // ===========
+
 
   onSearchChange() {
     if (!this.searchText.trim()) {
-      this.availableElements2 = this.availableElements1; // Reset if empty
+      this.availableElements2 = this.availableElements1; 
       return;
     }
 
@@ -254,27 +254,27 @@ export class AppComponent implements OnInit {
         ...category,
         elements: category.elements.filter(element => element.label.toLowerCase().includes(searchLower))
       }))
-      .filter(category => category.elements.length); // Remove empty categories
+      .filter(category => category.elements.length); 
   }
 
   copyElement(element: any) {
     if (this.selectedGroup) {
-      const copiedElement = { ...element, id: Date.now() }; // Duplicate with a new ID
-      this.selectedGroup.elements.push(copiedElement); // Add to the Middle Pane
-      this.saveToLocalStorage(); // Persist changes
+      const copiedElement = { ...element, id: Date.now() }; 
+      this.selectedGroup.elements.push(copiedElement); 
+      this.saveToLocalStorage(); 
     }
   }
 
   copyFieldGroup(group: any) {
     const copiedGroup = {
-      ...group, // Copy all properties
-      id: Date.now(), // Generate a new ID to avoid duplicates
-      name: group.name + ' (Copy)', // Append "(Copy)" to distinguish
-      elements: group.elements.map((element: any) => ({ ...element, id: Date.now() })) // Copy each element with a new ID
+      ...group, 
+      id: Date.now(), 
+      name: group.name + ' (Copy)', 
+      elements: group.elements.map((element: any) => ({ ...element, id: Date.now() })) 
     };
 
-    this.fieldGroups.push(copiedGroup); // Add the copied group to the list
-    this.saveToLocalStorage(); // Persist changes
+    this.fieldGroups.push(copiedGroup);
+    this.saveToLocalStorage(); 
   }
 
 
